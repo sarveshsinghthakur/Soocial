@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            margin-top: 20px;
+        }
+        .chat__item__container {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+            height: 400px;
+            overflow-y: auto;
+        }
+        #id_message_send_input {
+            width: calc(100% - 100px);
+            border-radius: 5px;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            margin-right: 10px;
+        }
+        #id_message_send_button {
+            border-radius: 5px;
+            padding: 10px 20px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        #id_message_send_button:hover {
+            background-color: #0056b3;
+        }
+        .message {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            background-color: #f1f1f1;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .message.username {
+            text-align: right;
+            background-color: #e2e2e2;
+        }
+        .message.username b {
+            color: #0056b3;
+        }
+        .message.guest {
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <center><h1>Hello, Welcome to my chat site! {{ request.user }}</h1></center>
+        <br>
+        {% if request.user.is_authenticated %}
+        <center>Logout from the chat page <a href="../auth/login/">Logout</a></center>
+        {% endif %}
+        <div class="chat__item__container" id="id_chat_item_container">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="message {% if message.user == request.user %}username{% else %}guest{% endif %}">
+                        <b>{{ message.user.username }}:</b id="messageu" name="messageu"> {{ message.content }}
+                          <input type="hidden" id="hidus">
+                    </div>
+                {% endfor %}
+            {% else %}
+                
+            {% endif %}
+        </div>
+        <br />
+        <input type="text" id="id_message_send_input" placeholder="Type your message here..." />
+        <button type="button" id="id_message_send_button">Send Message</button>
+        <br />
+        <br />
+    </div>
+
+    <script>
+        const chatSocket = new WebSocket("ws://" + window.location.host + "/");
+        
+        chatSocket.onopen = function (e) {
+            console.log("The connection was setup successfully!");
+        };
+        
+        chatSocket.onclose = function (e) {
+            console.log("Something unexpected happened!");
+        };
+        
+        document.querySelector("#id_message_send_input").focus();
+        document.querySelector("#id_message_send_input").onkeyup = function (e) {
+            if (e.keyCode == 13) {
+                document.querySelector("#id_message_send_button").click();
+            }
+        };
+        
+        document.querySelector("#id_message_send_button").onclick = function (e) {
+            var messageInput = document.querySelector("#id_message_send_input").value;
+            chatSocket.send(JSON.stringify({ message: messageInput, username: "{{ request.user.username }}" }));
+        };
+        
+        chatSocket.onmessage = function (e) {
+            const data = JSON.parse(e.data);
+            var div = document.createElement("div");
+            div.classList.add("message");
+            div.classList.add(data.username === "{{ request.user.username }}" ? "username" : "guest");
+            div.innerHTML = `<b>${data.username}:</b> ${data.message}`;
+            document.querySelector("#id_message_send_input").value = "";
+            document.querySelector("#id_chat_item_container").appendChild(div);
+            document.querySelector("#id_chat_item_container").scrollTop = document.querySelector("#id_chat_item_container").scrollHeight;
+        };
+        $('#hidus').val(document.getElementById('messageu').innerHTML)
+    </script>
+</body>
+</html>
