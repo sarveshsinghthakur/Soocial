@@ -3,6 +3,11 @@ from pathlib import Path
 import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Other settings...
+
+STATIC_URL = '/static/'  # Make sure this is correct.
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Set your STATIC_ROOT
+
 
 SECRET_KEY = 'django-insecure-_rldc4ip%wq&mnq(9pathsk=j2bc$a**p@b-%!5%7-zk%&t7t2'
 
@@ -93,7 +98,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL='/index';
