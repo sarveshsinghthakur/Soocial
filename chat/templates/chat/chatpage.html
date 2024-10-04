@@ -19,13 +19,13 @@
             padding: 15px;
             background-color: #ffffff;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
+            max-width: 100%; /* Adjusted for mobile */
             margin: auto;
             height: 400px;
             overflow-y: auto;
         }
         #id_message_send_input {
-            width: calc(100% - 100px);
+            flex: 1; /* Allows input to take available space */
             border-radius: 5px;
             padding: 10px;
             border: 1px solid #ced4da;
@@ -59,6 +59,31 @@
         .message.guest {
             text-align: left;
         }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .chat__item__container {
+                height: 300px; /* Adjust height for smaller screens */
+            }
+            #id_message_send_input {
+                margin-right: 5px; /* Adjust margin for smaller screens */
+            }
+            #id_message_send_button {
+                padding: 8px 16px; /* Adjust button padding */
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .chat__item__container {
+                height: 250px; /* Further adjust height for very small screens */
+            }
+            #id_message_send_input {
+                width: 70%; /* Adjust input width */
+            }
+            #id_message_send_button {
+                width: 25%; /* Adjust button width */
+            }
+        }
     </style>
 </head>
 <body>
@@ -72,18 +97,19 @@
             {% if messages %}
                 {% for message in messages %}
                     <div class="message {% if message.user == request.user %}username{% else %}guest{% endif %}">
-                        <b>{{ message.user.username }}:</b id="messageu" name="messageu"> {{ message.content }}
-                          <input type="hidden" id="hidus">
+                        <b>{{ message.user.username }}:</b> {{ message.content }}
+                        <input type="hidden" id="hidus">
                     </div>
                 {% endfor %}
             {% else %}
-                
+                <p>No messages yet.</p>
             {% endif %}
         </div>
         <br />
-        <input type="text" id="id_message_send_input" placeholder="Type your message here..." />
-        <button type="button" id="id_message_send_button">Send Message</button>
-        <br />
+        <div class="d-flex justify-content-between align-items-center">
+            <input type="text" id="id_message_send_input" placeholder="Type your message here..." />
+            <button type="button" id="id_message_send_button">Send Message</button>
+        </div>
         <br />
     </div>
 
